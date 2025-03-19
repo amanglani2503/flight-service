@@ -57,6 +57,7 @@ public class FlightService {
                 .toList();
     }
 
+
     public List<FlightDTO> getAllFlights() {
         List<Flight> availableFlights = flightRepository.findAll();
 
