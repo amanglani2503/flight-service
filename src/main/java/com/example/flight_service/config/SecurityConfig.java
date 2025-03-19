@@ -23,9 +23,8 @@ public class SecurityConfig {
         http
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/flights/public").permitAll()  // Public access
-                        .requestMatchers("/flights/admin").hasRole("ADMIN")  // Admin only
-                        .requestMatchers("/flights/user").hasAnyRole("PASSENGER", "ADMIN")  // User & Admin
+                        .requestMatchers("/flights/add", "flights/update/**", "flights/delete/**").hasRole("ADMIN")
+                        .requestMatchers("/flights").hasAnyRole("PASSENGER")
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))

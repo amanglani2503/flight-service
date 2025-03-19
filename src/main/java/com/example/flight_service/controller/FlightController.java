@@ -1,49 +1,60 @@
 package com.example.flight_service.controller;
 
+import com.example.flight_service.dto.FlightDTO;
+import com.example.flight_service.entity.Flight;
+import com.example.flight_service.service.FlightService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @RestController
 @RequestMapping("/flights")
 public class FlightController {
 
+    @Autowired
+    private FlightService flightService;
+
     // adding new flight
-    @PostMapping
+    @PostMapping("add")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<Map<String, String>> addFlight() {
-        Map<String, String> response = new HashMap<>();
-        response.put("message", "Flight added successfully!");
-        return new ResponseEntity<>(response, HttpStatus.CREATED);
+    public ResponseEntity<Flight> addFlight(@RequestBody Flight flight) {
+        Flight savedFlight = flightService.addFlight(flight);
+        return new ResponseEntity<>(savedFlight, HttpStatus.CREATED);
     }
 
     // updating flight details (Admin Only)
-    @PutMapping("/{id}")
+    @PutMapping("update/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<Map<String, String>> updateFlight(@PathVariable String id) {
-        Map<String, String> response = new HashMap<>();
-        response.put("message", "Flight with ID " + id + " updated successfully!");
-        return new ResponseEntity<>(response, HttpStatus.OK);
+    public ResponseEntity<Flight> updateFlight(@PathVariable Integer id, @RequestBody Flight flightDetails) {
+        Flight updatedFlight = flightService.updateFlight(id, flightDetails);
+        return new ResponseEntity<>(updatedFlight, HttpStatus.OK);
     }
 
     // removing a flight (Admin Only)
-    @DeleteMapping("/{id}")
+    @DeleteMapping("delete/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<Map<String, String>> deleteFlight(@PathVariable String id) {
-        Map<String, String> response = new HashMap<>();
-        response.put("message", "Flight with ID " + id + " deleted successfully!");
-        return new ResponseEntity<>(response, HttpStatus.OK);
+    public ResponseEntity<Flight> deleteFlight(@PathVariable Integer id) {
+        Flight deletedFlight = flightService.deleteFlight(id);
+        return new ResponseEntity<>(deletedFlight, HttpStatus.OK);
     }
 
-    // fetch available flights
-    @GetMapping
-    public ResponseEntity<Map<String, Object>> getAvailableFlights() {
-        Map<String, Object> response = new HashMap<>();
-        response.put("flights", new String[]{"Flight A", "Flight B", "Flight C"});
-        return new ResponseEntity<>(response, HttpStatus.OK);
+    // fetch available flights - having available seats
+    @GetMapping("available")
+    public ResponseEntity<List<FlightDTO>> getAvailableFlights() {
+        List<FlightDTO> availableFlights = flightService.getAvailableFlights();
+        return new ResponseEntity<>(availableFlights, HttpStatus.OK);
+    }
+
+    // fetch all flights
+    @GetMapping("/all")
+    public ResponseEntity<List<FlightDTO>> getAllFlights() {
+        List<FlightDTO> flights = flightService.getAllFlights();
+        return new ResponseEntity<>(flights, HttpStatus.OK);
     }
 }
