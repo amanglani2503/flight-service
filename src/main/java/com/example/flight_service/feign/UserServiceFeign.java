@@ -8,6 +8,8 @@ import org.springframework.web.bind.annotation.RequestHeader;
 
 @FeignClient(name = "USER-SERVICE")
 public interface UserServiceFeign {
+
+    //Fetches the authenticated user's profile using the JWT token.
     @GetMapping("user/profile")
     ResponseEntity<User> getUserProfile(@RequestHeader("Authorization") String token);
 }
